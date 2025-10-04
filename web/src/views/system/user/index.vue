@@ -62,19 +62,16 @@
 
   // 搜索表单
   const searchForm = ref({
-    userName: undefined,
-    userGender: undefined,
-    userPhone: undefined,
-    userEmail: undefined,
-    status: '1'
+    username: undefined,
+    phone: undefined,
+    email: undefined,
+    status: 'active'
   })
 
-  // 用户状态配置
+  // 用户状态配置 - 修改为匹配后端返回的字符串状态
   const USER_STATUS_CONFIG = {
-    '1': { type: 'success' as const, text: '在线' },
-    '2': { type: 'info' as const, text: '离线' },
-    '3': { type: 'warning' as const, text: '异常' },
-    '4': { type: 'danger' as const, text: '注销' }
+    'active': { type: 'success' as const, text: '启用' },
+    'disabled': { type: 'danger' as const, text: '禁用' }
   } as const
 
   /**
@@ -129,20 +126,13 @@
                 previewTeleported: true
               }),
               h('div', {}, [
-                h('p', { class: 'user-name' }, row.userName),
-                h('p', { class: 'email' }, row.userEmail)
+                h('p', { class: 'user-name' }, row.username),
+                h('p', { class: 'email' }, row.email)
               ])
             ])
           }
         },
-        {
-          prop: 'userGender',
-          label: '性别',
-          sortable: true,
-          // checked: false, // 隐藏列
-          formatter: (row) => row.userGender
-        },
-        { prop: 'userPhone', label: '手机号' },
+        { prop: 'phone', label: '手机号' }, // 改为 phone
         {
           prop: 'status',
           label: '状态',
@@ -152,7 +142,7 @@
           }
         },
         {
-          prop: 'createTime',
+          prop: 'createdAt', // 改为 createdAt
           label: '创建日期',
           sortable: true
         },

@@ -4,7 +4,7 @@
 gfcli:
   gen:
     dao:
-      - link: "mysql:root:12345678@tcp(127.0.0.1:3306)/test"
+      - link: "mysql:gf_vue_admin:sR3fish8sjDMPcr3@tcp(82.156.25.210:3306)/gf_vue_admin?charset=utf8mb4&parseTime=True&loc=Local"
         descriptionTag: true
 
   docker:

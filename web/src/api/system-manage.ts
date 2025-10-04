@@ -6,7 +6,7 @@ import { menuDataToRouter } from '@/router/utils/menuToRouter'
 // 获取用户列表
 export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
   return request.get<Api.SystemManage.UserList>({
-    url: '/api/user/list',
+    url: '/users',
     params
   })
 }
@@ -14,8 +14,47 @@ export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
 // 获取角色列表
 export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
   return request.get<Api.SystemManage.RoleList>({
-    url: '/api/role/list',
+    url: '/roles',
     params
+  })
+}
+
+// 创建角色
+export function fetchCreateRole(params: Api.SystemManage.RoleCreateParams) {
+  return request.post<Api.SystemManage.RoleCreateResponse>({
+    url: '/roles',
+    params
+  })
+}
+
+// 根据ID获取角色详情
+export function fetchGetRoleById(id: number) {
+  return request.get<Api.SystemManage.RoleDetailResponse>({
+    url: `/roles/${id}`
+  })
+}
+
+// 更新角色
+export function fetchUpdateRole(params: Api.SystemManage.RoleUpdateParams) {
+  const { id, ...updateData } = params
+  return request.put<Api.SystemManage.CommonOperationResponse>({
+    url: `/roles/${id}`,
+    params: updateData
+  })
+}
+
+// 删除角色
+export function fetchDeleteRole(id: number) {
+  return request.del<Api.SystemManage.CommonOperationResponse>({
+    url: `/roles/${id}`
+  })
+}
+
+// 批量删除角色
+export function fetchDeleteRolesBatch(ids: number[]) {
+  return request.del<Api.SystemManage.CommonOperationResponse>({
+    url: '/roles/batch',
+    params: { ids }
   })
 }
 

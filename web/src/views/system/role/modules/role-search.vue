@@ -36,24 +36,24 @@
 
   // 角色状态选项
   const statusOptions = ref([
-    { label: '启用', value: true },
-    { label: '禁用', value: false }
+    { label: '启用', value: 'active' },
+    { label: '禁用', value: 'disabled' }
   ])
 
   // 表单配置
   const formItems = computed(() => [
     {
-      label: '角色名称',
-      key: 'roleName',
+      label: '角色显示名称',
+      key: 'displayName',
       type: 'input',
-      placeholder: '请输入角色名称',
+      placeholder: '请输入角色显示名称',
       clearable: true
     },
     {
-      label: '角色编码',
-      key: 'roleCode',
+      label: '角色名称',
+      key: 'name',
       type: 'input',
-      placeholder: '请输入角色编码',
+      placeholder: '请输入角色名称',
       clearable: true
     },
     {
@@ -65,7 +65,7 @@
     },
     {
       label: '角色状态',
-      key: 'enabled',
+      key: 'status',
       type: 'select',
       props: {
         placeholder: '请选择状态',

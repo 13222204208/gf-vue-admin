@@ -30,14 +30,14 @@ declare namespace Api {
     }
 
     /** 启用状态 */
-    type EnableStatus = '1' | '2'
+    type EnableStatus = 'active' | 'disabled'
   }
 
   /** 认证类型 */
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
     }
 
@@ -68,16 +68,13 @@ declare namespace Api {
       id: number
       avatar: string
       status: string
-      userName: string
-      userGender: string
-      nickName: string
-      userPhone: string
-      userEmail: string
+      username: string
+      nickname: string
+      phone: string
+      email: string
       userRoles: string[]
-      createBy: string
-      createTime: string
-      updateBy: string
-      updateTime: string
+      createdAt: string
+      updatedAt: string
     }
 
     /** 用户搜索参数 */
@@ -91,18 +88,60 @@ declare namespace Api {
 
     /** 角色列表项 */
     interface RoleListItem {
-      roleId: number
-      roleName: string
-      roleCode: string
+      id: number
+      name: string
+      displayName: string
       description: string
-      enabled: boolean
-      createTime: string
+      status: Api.Common.EnableStatus
+      createdAt: string
+      updatedAt: string
     }
 
     /** 角色搜索参数 */
     type RoleSearchParams = Partial<
-      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
+      Pick<RoleListItem, 'name' | 'displayName' | 'status'> &
         Api.Common.CommonSearchParams
     >
+
+    /** 角色创建参数 */
+    interface RoleCreateParams {
+      name: string
+      displayName: string
+      description?: string
+      status: Api.Common.EnableStatus
+    }
+
+    /** 角色更新参数 */
+    interface RoleUpdateParams {
+      id: number
+      name?: string
+      displayName?: string
+      description?: string
+      status?: Api.Common.EnableStatus
+    }
+
+    /** 角色创建响应 */
+    interface RoleCreateResponse {
+      id: number
+    }
+
+    /** 角色详情响应 */
+    interface RoleDetailResponse extends RoleListItem {}
+
+    /** 角色删除参数 */
+    interface RoleDeleteParams {
+      id: number
+    }
+
+    /** 角色批量删除参数 */
+    interface RoleBatchDeleteParams {
+      ids: number[]
+    }
+
+    /** 通用操作响应 */
+    interface CommonOperationResponse {
+      success: boolean
+      message?: string
+    }
   }
 }
