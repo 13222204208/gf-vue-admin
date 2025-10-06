@@ -21,12 +21,12 @@ var (
 			s := g.Server()
 			s.Group("/admin", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
-				
+
 				// 认证相关路由（不需要JWT验证）
 				authController := auth.NewV1()
 				group.POST("/auth/login", authController.Login)
 				group.POST("/auth/refresh_token", authController.RefreshToken)
-				
+
 				// 需要JWT验证的路由
 				group.Group("", func(protectedGroup *ghttp.RouterGroup) {
 					protectedGroup.Middleware(middleware.JWTAuth)

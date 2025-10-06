@@ -43,7 +43,7 @@
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
   import { useTable } from '@/composables/useTable'
-  import { fetchGetUserList } from '@/api/system-manage'
+  import { fetchGetUserList, fetchDeleteUser } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
 
@@ -211,15 +211,29 @@
   /**
    * 删除用户
    */
-  const deleteUser = (row: UserListItem): void => {
-    console.log('删除用户:', row)
-    ElMessageBox.confirm(`确定要注销该用户吗？`, '注销用户', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'error'
-    }).then(() => {
-      ElMessage.success('注销成功')
-    })
+  const deleteUser = async (row: UserListItem): Promise<void> => {
+    try {
+      await ElMessageBox.confirm(`确定要删除用户"${row.username}"吗？`, '删除用户', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      })
+
+      // 调用删除API
+      await fetchDeleteUser(row.id)
+
+      // 显示成功消息
+      ElMessage.success('用户删除成功')
+
+      // 刷新表格数据
+      await refreshData()
+    } catch (error: any) {
+      // 用户取消删除或删除失败
+      if (error !== 'cancel') {
+        console.error('删除用户失败:', error)
+        ElMessage.error(error?.message || '删除用户失败')
+      }
+    }
   }
 
   /**

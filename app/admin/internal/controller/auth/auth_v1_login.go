@@ -20,9 +20,13 @@ func (c *ControllerV1) Login(ctx context.Context, req *v1.LoginReq) (res *v1.Log
 	var user *entity.AdminUsers
 	err = dao.AdminUsers.Ctx(ctx).Where(dao.AdminUsers.Columns().Username, req.UserName).Scan(&user)
 	if err != nil {
+		//保存登录错误日志
+		g.Log().Error(ctx, "登录失败，用户名："+req.UserName+", 错误："+err.Error())
 		return nil, err
 	}
 	if user == nil {
+		//保存登录错误日志
+		g.Log().Error(ctx, "登录失败，用户名："+req.UserName+", 错误：用户名或密码错误")
 		return nil, gerror.New("用户名或密码错误")
 	}
 
