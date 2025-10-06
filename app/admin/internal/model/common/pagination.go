@@ -27,8 +27,8 @@ type ListRes struct {
 	CurrentRes
 }
 
-// GetcurrentInfo 从分页请求中获取分页信息
-func (p *CurrentReq) GetcurrentInfo() (current, size int) {
+// GetCurrentInfo 从分页请求中获取分页信息
+func (p *CurrentReq) GetCurrentInfo() (current, size int) {
 	current = p.Current
 	if current <= 0 {
 		current = 1

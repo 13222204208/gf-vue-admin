@@ -37,7 +37,7 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 	}
 
 	// 分页查询
-	current, size := req.GetcurrentInfo()
+	current, size := req.GetCurrentInfo()
 
 	var roles []entity.AdminRoles
 	err = query.Page(current, size).OrderDesc(dao.AdminRoles.Columns().Id).Scan(&roles)
@@ -54,9 +54,7 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 			DisplayName: role.DisplayName,
 			Description: role.Description,
 			Status:      role.Status,
-			UserCount:   0, // TODO: 计算使用该角色的用户数量
 			CreatedAt:   role.CreatedAt,
-			UpdatedAt:   role.UpdatedAt,
 		})
 	}
 

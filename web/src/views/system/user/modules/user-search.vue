@@ -42,10 +42,8 @@
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
-          { label: '在线', value: '1' },
-          { label: '离线', value: '2' },
-          { label: '异常', value: '3' },
-          { label: '注销', value: '4' }
+          { label: '正常', value: 'active' },
+          { label: '禁用', value: 'disabled' }
         ])
       }, 1000)
     })
@@ -59,22 +57,16 @@
   const formItems = computed(() => [
     {
       label: '用户名',
-      key: 'userName',
+      key: 'username',
       type: 'input',
       placeholder: '请输入用户名',
       clearable: true
     },
     {
       label: '手机号',
-      key: 'userPhone',
+      key: 'phone',
       type: 'input',
       props: { placeholder: '请输入手机号', maxlength: '11' }
-    },
-    {
-      label: '邮箱',
-      key: 'userEmail',
-      type: 'input',
-      props: { placeholder: '请输入邮箱' }
     },
     {
       label: '状态',
@@ -83,17 +75,6 @@
       props: {
         placeholder: '请选择状态',
         options: statusOptions.value
-      }
-    },
-    {
-      label: '性别',
-      key: 'userGender',
-      type: 'radiogroup',
-      props: {
-        options: [
-          { label: '男', value: '1' },
-          { label: '女', value: '2' }
-        ]
       }
     }
   ])

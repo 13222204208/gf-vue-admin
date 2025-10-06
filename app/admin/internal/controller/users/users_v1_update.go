@@ -12,7 +12,7 @@ import (
 
 func (c *ControllerV1) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.UpdateRes, err error) {
 	// 检查用户是否存在
-	count, err := dao.AdminUsers.Ctx(ctx).Where("id", req.Id).Count()
+	count, err := dao.AdminUsers.Ctx(ctx).Where(dao.AdminUsers.Columns().Id, req.Id).Count()
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *ControllerV1) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.U
 	}
 
 	// 更新数据
-	_, err = dao.AdminUsers.Ctx(ctx).Where("id", req.Id).Data(updateData).Update()
+	_, err = dao.AdminUsers.Ctx(ctx).Where(dao.AdminUsers.Columns().Id, req.Id).Data(updateData).Update()
 	if err != nil {
 		return nil, err
 	}

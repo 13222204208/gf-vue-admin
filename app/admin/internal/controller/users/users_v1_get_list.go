@@ -16,14 +16,11 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 	if req.Username != "" {
 		model = model.WhereLike(dao.AdminUsers.Columns().Username, "%"+req.Username+"%")
 	}
-	if req.Nickname != "" {
-		model = model.WhereLike(dao.AdminUsers.Columns().Nickname, "%"+req.Nickname+"%")
+	if req.Phone != "" {
+		model = model.WhereLike(dao.AdminUsers.Columns().Phone, "%"+req.Phone+"%")
 	}
 	if req.Status != "" {
 		model = model.Where(dao.AdminUsers.Columns().Status, req.Status)
-	}
-	if req.RoleId > 0 {
-		model = model.Where(dao.AdminUsers.Columns().RoleId, req.RoleId)
 	}
 
 	// 获取总数
@@ -31,38 +28,44 @@ func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1
 	if err != nil {
 		return nil, err
 	}
+
 	// 获取分页参数
-	current, size := req.CurrentReq.GetcurrentInfo()
-	// 分页查询
-	var users []entity.AdminUsers
-	err = model.Page(current, size).OrderDesc(dao.AdminUsers.Columns().Id).Scan(&users)
+	current, size := req.CurrentReq.GetCurrentInfo()
+
+	// 关联查询用户和角色信息
+	type UserWithRole struct {
+		entity.AdminUsers
+		RoleName string `json:"roleName"`
+	}
+
+	var usersWithRole []UserWithRole
+	err = model.
+		LeftJoin(dao.AdminRoles.Table()+" r", "r.id = "+dao.AdminUsers.Columns().RoleId).
+		Fields(dao.AdminUsers.Table()+".*", "r.display_name as role_name").
+		Page(current, size).
+		OrderDesc(dao.AdminUsers.Columns().Id).
+		Scan(&usersWithRole)
 	if err != nil {
 		return nil, err
 	}
 
 	// 转换数据格式
 	var list []v1.GetByIdRes
-	for _, user := range users {
-		// 模拟用户角色，实际项目中应该从角色表查询
-		userRoles := []string{"admin"}
-		if user.RoleId == 2 {
-			userRoles = []string{"user"}
-		}
+	for _, userRole := range usersWithRole {
 
 		list = append(list, v1.GetByIdRes{
-			Id:            user.Id,
-			Username:      user.Username,
-			Nickname:      user.Nickname,
-			Email:         user.Email,
-			Phone:         user.Phone,
-			Avatar:        user.Avatar,
-			Status:        user.Status,
-			RoleId:        user.RoleId,
-			UserRoles:     userRoles,
-			LastLoginIp:   user.LastLoginIp,
-			LastLoginTime: user.LastLoginTime,
-			CreatedAt:     user.CreatedAt,
-			UpdatedAt:     user.UpdatedAt,
+			Id:            userRole.Id,
+			Username:      userRole.Username,
+			Nickname:      userRole.Nickname,
+			Email:         userRole.Email,
+			Phone:         userRole.Phone,
+			Avatar:        userRole.Avatar,
+			Status:        userRole.Status,
+			RoleId:        userRole.RoleId,
+			RoleName:      userRole.RoleName,
+			LastLoginIp:   userRole.LastLoginIp,
+			LastLoginTime: userRole.LastLoginTime,
+			CreatedAt:     userRole.CreatedAt,
 		})
 	}
 

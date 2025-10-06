@@ -43,7 +43,7 @@
   // 表单配置
   const formItems = computed(() => [
     {
-      label: '角色显示名称',
+      label: '显示名称',
       key: 'displayName',
       type: 'input',
       placeholder: '请输入角色显示名称',
@@ -56,13 +56,7 @@
       placeholder: '请输入角色名称',
       clearable: true
     },
-    {
-      label: '角色描述',
-      key: 'description',
-      type: 'input',
-      placeholder: '请输入角色描述',
-      clearable: true
-    },
+
     {
       label: '角色状态',
       key: 'status',
@@ -71,31 +65,6 @@
         placeholder: '请选择状态',
         options: statusOptions.value,
         clearable: true
-      }
-    },
-    {
-      label: '创建日期',
-      key: 'daterange',
-      type: 'datetime',
-      props: {
-        style: { width: '100%' },
-        placeholder: '请选择日期范围',
-        type: 'daterange',
-        rangeSeparator: '至',
-        startPlaceholder: '开始日期',
-        endPlaceholder: '结束日期',
-        valueFormat: 'YYYY-MM-DD',
-        shortcuts: [
-          { text: '今日', value: [new Date(), new Date()] },
-          {
-            text: '最近一周',
-            value: [new Date(Date.now() - 604800000), new Date()]
-          },
-          {
-            text: '最近一个月',
-            value: [new Date(Date.now() - 2592000000), new Date()]
-          }
-        ]
       }
     }
   ])

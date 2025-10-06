@@ -11,11 +11,41 @@ export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
   })
 }
 
+// 创建用户
+export function fetchCreateUser(params: Api.SystemManage.UserCreateParams) {
+  return request.post<Api.SystemManage.UserCreateResponse>({
+    url: '/users',
+    params
+  })
+}
+
+// 更新用户
+export function fetchUpdateUser(params: Api.SystemManage.UserUpdateParams) {
+  const { id, ...updateData } = params
+  return request.put<Api.SystemManage.CommonOperationResponse>({
+    url: `/users/${id}`,
+    params: updateData
+  })
+}
+
+// 删除用户
+export function fetchDeleteUser(id: number) {
+  return request.del<Api.SystemManage.CommonOperationResponse>({
+    url: `/users/${id}`
+  })
+}
+
 // 获取角色列表
 export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
   return request.get<Api.SystemManage.RoleList>({
     url: '/roles',
     params
+  })
+}
+//获取已启用所有角色
+export function fetchGetEnabledRoleList() {
+  return request.get<Api.SystemManage.ActiveRoleList>({
+    url: '/roles/active'
   })
 }
 
@@ -24,13 +54,6 @@ export function fetchCreateRole(params: Api.SystemManage.RoleCreateParams) {
   return request.post<Api.SystemManage.RoleCreateResponse>({
     url: '/roles',
     params
-  })
-}
-
-// 根据ID获取角色详情
-export function fetchGetRoleById(id: number) {
-  return request.get<Api.SystemManage.RoleDetailResponse>({
-    url: `/roles/${id}`
   })
 }
 
@@ -47,14 +70,6 @@ export function fetchUpdateRole(params: Api.SystemManage.RoleUpdateParams) {
 export function fetchDeleteRole(id: number) {
   return request.del<Api.SystemManage.CommonOperationResponse>({
     url: `/roles/${id}`
-  })
-}
-
-// 批量删除角色
-export function fetchDeleteRolesBatch(ids: number[]) {
-  return request.del<Api.SystemManage.CommonOperationResponse>({
-    url: '/roles/batch',
-    params: { ids }
   })
 }
 

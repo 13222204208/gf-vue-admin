@@ -23,7 +23,6 @@
         :data="data"
         :columns="columns"
         :pagination="pagination"
-        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -57,21 +56,17 @@
   const dialogVisible = ref(false)
   const currentUserData = ref<Partial<UserListItem>>({})
 
-  // 选中行
-  const selectedRows = ref<UserListItem[]>([])
-
   // 搜索表单
   const searchForm = ref({
     username: undefined,
     phone: undefined,
-    email: undefined,
-    status: 'active'
+    status: undefined
   })
 
   // 用户状态配置 - 修改为匹配后端返回的字符串状态
   const USER_STATUS_CONFIG = {
-    'active': { type: 'success' as const, text: '启用' },
-    'disabled': { type: 'danger' as const, text: '禁用' }
+    active: { type: 'success' as const, text: '启用' },
+    disabled: { type: 'danger' as const, text: '禁用' }
   } as const
 
   /**
@@ -110,7 +105,6 @@
       // 排除 apiParams 中的属性
       excludeParams: [],
       columnsFactory: () => [
-        { type: 'selection' }, // 勾选列
         { type: 'index', width: 60, label: '序号' }, // 序号
         {
           prop: 'avatar',
@@ -132,6 +126,7 @@
             ])
           }
         },
+        { prop: 'nickname', label: '昵称' }, // 改为 nickname
         { prop: 'phone', label: '手机号' }, // 改为 phone
         {
           prop: 'status',
@@ -140,6 +135,10 @@
             const statusConfig = getUserStatusConfig(row.status)
             return h(ElTag, { type: statusConfig.type }, () => statusConfig.text)
           }
+        },
+        {
+          prop: 'roleName',
+          label: '角色'
         },
         {
           prop: 'createdAt', // 改为 createdAt
@@ -228,19 +227,16 @@
    */
   const handleDialogSubmit = async () => {
     try {
+      // 关闭对话框
       dialogVisible.value = false
+      // 清空当前用户数据
       currentUserData.value = {}
+      // 刷新表格数据
+      await refreshData()
+      console.log('表格数据已刷新')
     } catch (error) {
-      console.error('提交失败:', error)
+      console.error('刷新数据失败:', error)
     }
-  }
-
-  /**
-   * 处理表格行选择变化
-   */
-  const handleSelectionChange = (selection: UserListItem[]): void => {
-    selectedRows.value = selection
-    console.log('选中行数据:', selectedRows.value)
   }
 </script>
 

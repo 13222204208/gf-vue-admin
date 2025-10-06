@@ -15,6 +15,7 @@
     "ElLoading": true,
     "ElMessage": true,
     "ElMessageBox": true,
+    "ElNotification": true,
     "ElRadioGroup": true,
     "ElRate": true,
     "ElSelect": true,

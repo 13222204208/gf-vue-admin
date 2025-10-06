@@ -7,8 +7,8 @@
     @close="handleClose"
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <ElFormItem label="角色显示名称" prop="displayName">
-        <ElInput v-model="form.displayName" placeholder="请输入角色显示名称" />
+      <ElFormItem label="角色标识" prop="displayName">
+        <ElInput v-model="form.displayName" placeholder="请输入角色标识" />
       </ElFormItem>
       <ElFormItem label="角色名称" prop="name">
         <ElInput v-model="form.name" placeholder="请输入角色名称（英文唯一标识）" />
@@ -22,11 +22,7 @@
         />
       </ElFormItem>
       <ElFormItem label="启用">
-        <ElSwitch  
-          v-model="form.status"  
-          active-value="active"
-          inactive-value="disabled"
-        />
+        <ElSwitch v-model="form.status" active-value="active" inactive-value="disabled" />
       </ElFormItem>
     </ElForm>
     <template #footer>
@@ -79,7 +75,11 @@
     name: [
       { required: true, message: '请输入角色名称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
-      { pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/, message: '角色名称必须以字母开头，只能包含字母、数字和下划线', trigger: 'blur' }
+      {
+        pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
+        message: '角色名称必须以字母开头，只能包含字母、数字和下划线',
+        trigger: 'blur'
+      }
     ],
     description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }]
   })
@@ -167,7 +167,7 @@
         })
         ElMessage.success('修改成功')
       }
-      
+
       emit('success')
       handleClose()
     } catch (error: any) {
