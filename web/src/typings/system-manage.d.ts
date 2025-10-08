@@ -104,6 +104,114 @@ declare namespace Api {
       id: number
     }
 
+    /** 菜单相关类型 */
+    type MenuList = Api.Common.PaginatedResponse<MenuListItem>
+
+    interface MenuListItem {
+      id: number
+      parentId: number
+      title: string
+      icon: string
+      path: string
+      component: string
+      redirect: string
+      isLink: number
+      linkUrl: string
+      isIframe: number
+      isCache: number
+      isHide: number
+      isHideTab: number
+      isFullPage: number
+      isFixedTab: number
+      isFirstLevel: number
+      isAuthButton: number
+      authMark: string
+      authList: string
+      roles: string
+      showBadge: number
+      showTextBadge: string
+      activePath: string
+      orderNum: number
+      status: string
+      remark: string
+      createdAt: string | null
+      updatedAt: string | null
+    }
+
+    type MenuSearchParams = Partial<
+      Pick<MenuListItem, 'title' | 'path' | 'status' | 'parentId' | 'isAuthButton'> &
+        Api.Common.CommonSearchParams
+    >
+
+    interface MenuTreeResponse {
+      list: MenuTreeItem[]
+    }
+
+    interface MenuTreeItem extends MenuListItem {
+      children?: MenuTreeItem[]
+    }
+
+    interface MenuCreateParams {
+      parentId?: number
+      title: string
+      icon?: string
+      path: string
+      component?: string
+      redirect?: string
+      isLink?: number
+      linkUrl?: string
+      isIframe?: number
+      isCache?: number
+      isHide?: number
+      isHideTab?: number
+      isFullPage?: number
+      isFixedTab?: number
+      isFirstLevel?: number
+      isAuthButton?: number
+      authMark?: string
+      authList?: string
+      roles?: string
+      showBadge?: number
+      showTextBadge?: string
+      activePath?: string
+      orderNum?: number
+      status?: string
+      remark?: string
+    }
+
+    interface MenuUpdateParams {
+      id: number
+      parentId?: number
+      title?: string
+      icon?: string
+      path?: string
+      component?: string
+      redirect?: string
+      isLink?: number
+      linkUrl?: string
+      isIframe?: number
+      isCache?: number
+      isHide?: number
+      isHideTab?: number
+      isFullPage?: number
+      isFixedTab?: number
+      isFirstLevel?: number
+      isAuthButton?: number
+      authMark?: string
+      authList?: string
+      roles?: string
+      showBadge?: number
+      showTextBadge?: string
+      activePath?: string
+      orderNum?: number
+      status?: string
+      remark?: string
+    }
+
+    interface MenuCreateResponse {
+      id: number
+    }
+
     interface CommonOperationResponse {
       success: boolean
       message?: string

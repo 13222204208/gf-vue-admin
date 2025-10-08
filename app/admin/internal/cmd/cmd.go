@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"gf-vue-admin/app/admin/internal/controller/auth"
+	"gf-vue-admin/app/admin/internal/controller/menus"
 	"gf-vue-admin/app/admin/internal/controller/roles"
 	"gf-vue-admin/app/admin/internal/controller/users"
 	"gf-vue-admin/app/admin/internal/middleware"
@@ -33,6 +34,7 @@ var (
 					protectedGroup.Bind(
 						users.NewV1(),
 						roles.NewV1(),
+						menus.NewV1(),
 					)
 					// 用户信息接口（需要JWT验证）
 					protectedGroup.GET("/user/info", authController.GetUserInfo)

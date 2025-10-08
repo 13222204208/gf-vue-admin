@@ -50,18 +50,22 @@
 </template>
 
 <script setup lang="ts">
-  import { useMenuStore } from '@/store/modules/menu'
   import { formatMenuTitle } from '@/router/utils/utils'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTableColumns } from '@/composables/useTableColumns'
   import type { AppRouteRecord } from '@/types/router'
   import { useAuth } from '@/composables/useAuth'
   import MenuDialog from './modules/menu-dialog.vue'
+  import {
+    fetchGetMenuTree,
+    fetchCreateMenu,
+    fetchUpdateMenu,
+    fetchDeleteMenu
+  } from '@/api/system-manage'
 
   defineOptions({ name: 'Menus' })
 
   const { hasAuth } = useAuth()
-  const { menuList } = storeToRefs(useMenuStore())
 
   // 状态管理
   const loading = ref(false)
@@ -194,7 +198,7 @@
           }),
           h(ArtButtonTable, {
             type: 'delete',
-            onClick: () => handleDeleteMenu()
+            onClick: () => handleDeleteMenu(row.id || 0)
           })
         ])
       }
@@ -202,7 +206,7 @@
   ])
 
   // 数据相关
-  const tableData = ref<AppRouteRecord[]>([])
+  const tableData = ref<Api.SystemManage.MenuTreeItem[]>([])
 
   // 事件处理
   const handleReset = () => {
@@ -220,12 +224,20 @@
     getTableData()
   }
 
-  const getTableData = () => {
+  // 获取菜单树数据
+  const getTableData = async () => {
     loading.value = true
-    setTimeout(() => {
-      tableData.value = menuList.value
+    try {
+      const data = await fetchGetMenuTree()
+      console.log('菜单树', data)
+      tableData.value = data.list || []
+    } catch (error) {
+      console.error('获取菜单树失败:', error)
+      ElMessage.error('获取菜单数据失败')
+      tableData.value = []
+    } finally {
       loading.value = false
-    }, 500)
+    }
   }
 
   // 工具函数
@@ -241,6 +253,30 @@
       }
     }
     return cloned
+  }
+
+  // 将后端菜单数据转换为前端路由格式
+  const convertMenuToRoute = (menu: Api.SystemManage.MenuTreeItem): AppRouteRecord => {
+    return {
+      path: menu.path,
+      name: menu.path.replace(/\//g, '_'),
+      meta: {
+        title: menu.title,
+        icon: menu.icon,
+        isAuthButton: menu.isAuthButton === 1,
+        authMark: menu.authMark,
+        authList: menu.authList ? JSON.parse(menu.authList) : [],
+        link: menu.isLink === 1 ? menu.linkUrl : undefined,
+        isIframe: menu.isIframe === 1,
+        isCache: menu.isCache === 1,
+        isHide: menu.isHide === 1,
+        isHideTab: menu.isHideTab === 1,
+        isFullPage: menu.isFullPage === 1,
+        isFixedTab: menu.isFixedTab === 1,
+        parentPath: menu.parentId ? String(menu.parentId) : undefined
+      },
+      children: menu.children ? menu.children.map(convertMenuToRoute) : undefined
+    }
   }
 
   const convertAuthListToChildren = (items: AppRouteRecord[]): AppRouteRecord[] => {
@@ -305,7 +341,9 @@
 
   // 过滤后的表格数据
   const filteredTableData = computed(() => {
-    const searchedData = searchMenu(tableData.value)
+    // 将后端菜单数据转换为前端路由格式
+    const routeData = tableData.value.map(convertMenuToRoute)
+    const searchedData = searchMenu(routeData)
     return convertAuthListToChildren(searchedData)
   })
 
@@ -341,25 +379,80 @@
     dialogVisible.value = true
   }
 
-  const handleSubmit = (formData: any) => {
-    console.log('提交数据:', formData)
-    // 这里可以调用API保存数据
-    getTableData()
+  const handleSubmit = async (formData: any) => {
+    try {
+      loading.value = true
+
+      // 将前端表单数据转换为后端API需要的格式
+      const apiParams: Api.SystemManage.MenuCreateParams = {
+        parentId: formData.parentId || 0,
+        title: formData.name,
+        icon: formData.icon || '',
+        path: formData.path,
+        component: formData.component || '',
+        redirect: formData.redirect || '',
+        isLink: formData.link ? 1 : 0,
+        linkUrl: formData.link || '',
+        isIframe: formData.isIframe ? 1 : 0,
+        isCache: formData.keepAlive ? 1 : 0,
+        isHide: formData.isHide ? 1 : 0,
+        isHideTab: formData.isHideTab ? 1 : 0,
+        isFullPage: formData.isFullPage ? 1 : 0,
+        isFixedTab: formData.fixedTab ? 1 : 0,
+        isFirstLevel: formData.parentId ? 0 : 1,
+        isAuthButton: formData.isMenu ? 0 : 1,
+        authMark: formData.label || '',
+        authList: formData.authList ? JSON.stringify(formData.authList) : '',
+        roles: Array.isArray(formData.roles) ? formData.roles.join(',') : formData.roles || '',
+        showBadge: formData.showBadge ? 1 : 0,
+        showTextBadge: formData.showTextBadge || '',
+        activePath: formData.activePath || '',
+        orderNum: formData.sort || 1,
+        status: formData.isEnable ? '1' : '0',
+        remark: formData.remark || ''
+      }
+
+      if (formData.id && formData.id > 0) {
+        // 编辑模式 - 使用更新API
+        await fetchUpdateMenu({
+          id: formData.id,
+          ...apiParams
+        })
+        ElMessage.success('菜单更新成功')
+      } else {
+        // 新增模式 - 使用创建API
+        await fetchCreateMenu(apiParams)
+        ElMessage.success('菜单创建成功')
+      }
+
+      // 刷新表格数据
+      await getTableData()
+    } catch (error) {
+      console.error('菜单操作失败:', error)
+      ElMessage.error(formData.id ? '菜单更新失败' : '菜单创建失败')
+    } finally {
+      loading.value = false
+    }
   }
 
-  const handleDeleteMenu = async () => {
+  const handleDeleteMenu = async (id: number) => {
     try {
       await ElMessageBox.confirm('确定要删除该菜单吗？删除后无法恢复', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
+      loading.value = true
+      console.log('删除菜单ID:', id)
+      await fetchDeleteMenu(id)
       ElMessage.success('删除成功')
       getTableData()
     } catch (error) {
       if (error !== 'cancel') {
         ElMessage.error('删除失败')
       }
+    } finally {
+      loading.value = false
     }
   }
 

@@ -1,7 +1,4 @@
 import request from '@/utils/http'
-import { AppRouteRecord } from '@/types/router'
-import { asyncRoutes } from '@/router/routes/asyncRoutes'
-import { menuDataToRouter } from '@/router/utils/menuToRouter'
 
 // 获取用户列表
 export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
@@ -73,23 +70,59 @@ export function fetchDeleteRole(id: number) {
   })
 }
 
-interface MenuResponse {
-  menuList: AppRouteRecord[]
+// 菜单相关接口
+
+// 获取菜单数据（用于路由）
+export function fetchGetMenuList() {
+  return request.get<Api.SystemManage.MenuTreeResponse>({
+    url: '/menus/user'
+  })
 }
 
-// 获取菜单数据（模拟）
-// 当前使用本地模拟路由数据，实际项目中请求接口返回 asyncRoutes.ts 文件的数据
-export async function fetchGetMenuList(delay = 300): Promise<MenuResponse> {
-  try {
-    // 模拟接口返回的菜单数据
-    const menuData = asyncRoutes
-    // 处理菜单数据
-    const menuList = menuData.map((route) => menuDataToRouter(route))
-    // 模拟接口延迟
-    await new Promise((resolve) => setTimeout(resolve, delay))
+// 菜单管理API接口
 
-    return { menuList }
-  } catch (error) {
-    throw error instanceof Error ? error : new Error('获取菜单失败')
-  }
+// 获取菜单列表
+export function fetchGetMenuManageList(params: Api.SystemManage.MenuSearchParams) {
+  return request.get<Api.SystemManage.MenuList>({
+    url: '/menus',
+    params
+  })
+}
+
+// 获取菜单树
+export function fetchGetMenuTree() {
+  return request.get<Api.SystemManage.MenuTreeResponse>({
+    url: '/menus/tree'
+  })
+}
+
+// 根据ID获取菜单详情
+export function fetchGetMenuById(id: number) {
+  return request.get<Api.SystemManage.MenuListItem>({
+    url: `/menus/${id}`
+  })
+}
+
+// 创建菜单
+export function fetchCreateMenu(params: Api.SystemManage.MenuCreateParams) {
+  return request.post<Api.SystemManage.MenuCreateResponse>({
+    url: '/menus',
+    params
+  })
+}
+
+// 更新菜单
+export function fetchUpdateMenu(params: Api.SystemManage.MenuUpdateParams) {
+  const { id, ...updateData } = params
+  return request.put<Api.SystemManage.CommonOperationResponse>({
+    url: `/menus/${id}`,
+    params: updateData
+  })
+}
+
+// 删除菜单
+export function fetchDeleteMenu(id: number) {
+  return request.del<Api.SystemManage.CommonOperationResponse>({
+    url: `/menus/${id}`
+  })
 }
